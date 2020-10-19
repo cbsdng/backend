@@ -1,7 +1,7 @@
 from flask import current_app
 from flask_smorest import Blueprint, abort
 from freenit.api.methodviews import ProtectedMethodView
-from freenit.schemas.paging import PageInSchema, paginate
+from freenit.schemas.paging import PageInSchema
 
 from ..models.instance import Instance
 from ..schemas.instance import InstancePageOutSchema, InstanceSchema
@@ -16,11 +16,12 @@ class InstanceListAPI(ProtectedMethodView):
     def get(self, pagination):
         """List instances"""
         instances = Instance.fetchAll(current_app.config['SOCKET'])
-        return {
+        result = {
             'data': [i.data() for i in instances],
             'total': len(instances),
             'pages': 1,
         }
+        return result
 
     @blueprint.arguments(InstanceSchema)
     @blueprint.response(InstanceSchema)

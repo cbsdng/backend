@@ -17,7 +17,7 @@ class InstanceSchema(BaseSchema):
     pcpu = fields.Number(dump_only=True)
     ram = fields.Number(dump_only=True)
     state = fields.String(dump_only=True)
-    type = fields.String(dump_only=True)
+    hypervisor = fields.String(dump_only=True)
     vnc = fields.String(dump_only=True)
 
 
