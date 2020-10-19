@@ -1,0 +1,5 @@
+class Type():
+    NONE = 0x0
+    NOCOLOR = 0x1
+    JAIL = 0x2
+    BHYVE = 0x4

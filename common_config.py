@@ -35,22 +35,10 @@ class Config:
     ACCOUNT_REQUEST_EXPIRY = 24  # in hours
     PASSWORD_RESET_EXPIRY = 2  # in hours
     COLLECT_STATIC_ROOT = os.path.dirname(__file__) + '/static'
+    SOCKET = '/var/run/cbsdng/cbsdng.sock'
     DATABASE = {
         'name': 'database.db',
         'engine': 'SqliteDatabase',
-    }
-    MAIL = {
-        #  'host': 'mail.example.com',
-        #  'port': 587,
-        #  'ssl': True,
-        #  'username': 'someone@example.com',
-        #  'password': 'Sekrit',
-    }
-    FROM_EMAIL = 'office@example.com'
-    SUBJECTS = {
-        'prefix': '[Freenit] ',
-        'confirm': 'Account confirmation',
-        'register': 'Account registration',
     }
 
     @staticmethod
