@@ -21,7 +21,7 @@ class Instance():
         self.pcpu = kwargs.get('pcpu', 0)
         self.ostype = kwargs.get('ostype', '')
         self.vnc = kwargs.get('vnc', '')
-        self.type = kwargs.get('type', 'jail')
+        self.hypervisor = kwargs.get('hypervisor', 'jail')
         if self.sockpath is not None:
             self.sock = socket.socket(socket.AF_UNIX, socket.SOCK_STREAM)
             self.sock.connect(self.sockpath)
@@ -60,8 +60,9 @@ class Instance():
             tokens = [token for token in m.split() if token != '']
             if (len(tokens) == 10):
                 i = Instance()
-                i.name, i.id, i.ram, i.curmem, i.cpus, i.pcpu, i.ostype, i.ip, i.state, i.vnc = tokens
-                i.type = 'bhyve'
+                i.name, i.id, i.ram, i.curmem, i.cpus = tokens[:5]
+                i.pcpu, i.ostype, i.ip, i.state, i.vnc = tokens[5:]
+                i.hypervisor = 'bhyve'
                 instances.append(i)
 
         cls.sock.close()
@@ -74,7 +75,7 @@ class Instance():
         return self.__str__()
 
     def data(self):
-        if self.type == 'bhyve':
+        if self.hypervisor == 'bhyve':
             return {
                 'id': self.id,
                 'name': self.name,
@@ -85,6 +86,7 @@ class Instance():
                 'ip': self.ip,
                 'state': self.state,
                 'vnc': self.vnc,
+                'hypervisor': self.hypervisor,
             }
         else:
             return {
@@ -94,4 +96,5 @@ class Instance():
                 'hostname': self.hostname,
                 'path': self.path,
                 'state': self.state,
+                'hypervisor': self.hypervisor,
             }
