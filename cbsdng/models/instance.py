@@ -31,39 +31,37 @@ class Instance():
         cls.sock = socket.socket(socket.AF_UNIX, socket.SOCK_STREAM)
         cls.sock.connect(sockpath)
         command = Message(0, Type.NOCOLOR, 'ls header=0')
-        data = str(command)
-        cls.sock.sendall(bytes(data, 'utf-8'))
-        buffer = cls.sock.recv(1024)
-        data = buffer.decode('utf-8')
-        message = Message()
-        message.parse(data)
+        command.send(cls.sock)
         instances = []
-        for m in message._payload.split('\n'):
-            tokens = [token for token in m.split() if token != '']
-            if (len(tokens) == 6):
-                i = Instance()
-                i.name, i.id, i.ip, i.hostname, i.path, i.state = tokens
-                i.type = 'jail'
-                instances.append(i)
+        while True:
+            message = Message.receive(cls.sock)
+            if message.type == -1:
+                break
+            for m in message.payload.split('\n'):
+                tokens = [token for token in m.split() if token != '']
+                if (len(tokens) == 6):
+                    i = Instance()
+                    i.name, i.id, i.ip, i.hostname, i.path, i.state = tokens
+                    i.type = 'jail'
+                    instances.append(i)
         cls.sock.close()
 
         cls.sock = socket.socket(socket.AF_UNIX, socket.SOCK_STREAM)
         cls.sock.connect(sockpath)
         command = Message(0, Type.BHYVE | Type.NOCOLOR, 'ls header=0')
-        data = str(command)
-        cls.sock.sendall(bytes(data, 'utf-8'))
-        buffer = cls.sock.recv(1024)
-        data = buffer.decode('utf-8')
-        message = Message()
-        message.parse(data)
-        for m in message._payload.split('\n'):
-            tokens = [token for token in m.split() if token != '']
-            if (len(tokens) == 10):
-                i = Instance()
-                i.name, i.id, i.ram, i.curmem, i.cpus = tokens[:5]
-                i.pcpu, i.ostype, i.ip, i.state, i.vnc = tokens[5:]
-                i.hypervisor = 'bhyve'
-                instances.append(i)
+        command.send(cls.sock)
+        while True:
+            message = Message.receive(cls.sock)
+            if message.type == -1:
+                break
+            for m in message.payload.split('\n'):
+                tokens = [token for token in m.split() if token != '']
+                if (len(tokens) == 10):
+                    i = Instance()
+                    i.name, i.id, i.ram, i.curmem, i.cpus = tokens[:5]
+                    i.pcpu, i.ostype, i.ip, i.state, i.vnc = tokens[5:]
+                    i.hypervisor = 'bhyve'
+                    instances.append(i)
 
         cls.sock.close()
         return instances
