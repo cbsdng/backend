@@ -12,8 +12,12 @@ export FLASK_ENV="testing"
 setup
 
 
-if [ "${OFFLINE}" != "yes" ]; then
-  pip install -U -r requirements_dev.txt
+if [ "${SYSPKG}" = "no" ]; then
+  if [ "${OFFLINE}" != "yes" ]; then
+    pip install -U -r requirements_dev.txt
+  fi
+else
+  sudo pkg install -y py37-flake8 py37-pytest-flask py37-pytest-factoryboy py37-pytest-cov
 fi
 
 
