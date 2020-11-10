@@ -22,4 +22,4 @@ fi
 
 echo "Backend"
 echo "==============="
-uwsgi --master --http 0.0.0.0:${FLASK_PORT} --python-auto-reload 1 --honour-stdin --wsgi-file devel.py
+uwsgi --master --http 0.0.0.0:${FLASK_PORT} --http-websockets --python-auto-reload 1 --honour-stdin --wsgi-file devel.py

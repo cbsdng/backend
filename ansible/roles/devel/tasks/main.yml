@@ -1,0 +1,5 @@
+---
+- name: install cbsdng packages
+  with_items: "{{ cbsdng_packages }}"
+  package:
+    name: "{{ item.name }}"

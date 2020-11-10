@@ -7,8 +7,8 @@ from name import app_name
 
 
 def init(config_name):
-    api = import_module(f'{app_name}.api')
+    app = import_module(f'{app_name}')
     config = configs[config_name]
     application = create_app(config)
-    api.create_api(application)
+    app.create_app(application)
     return application
