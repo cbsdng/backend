@@ -1,5 +1,7 @@
-from freenit.api import register_endpoints
+from flask_socketio import SocketIO
+from .api import create_api
 
 
-def create_api(app):
-    register_endpoints(app, '/api/v0', [])
+def create_app(app):
+    app.socketio = SocketIO(app, logger=True)
+    create_api(app)

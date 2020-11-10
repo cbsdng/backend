@@ -1,0 +1,3 @@
+---
+cbsdng_packages:
+  - name: "{{ python_prefix }}-Flask-SocketIO"
