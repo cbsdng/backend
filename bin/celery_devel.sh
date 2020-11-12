@@ -20,6 +20,6 @@ if [ "${SYSPKG}" = "no" ]; then
 fi
 
 
-echo "Backend"
+echo "Celery"
 echo "==============="
-uwsgi --master --http 0.0.0.0:${FLASK_PORT} --gevent 16 --gevent-monkey-patch --http-websockets --python-auto-reload 1 --honour-stdin --wsgi-file devel.py
+watchmedo auto-restart --directory=./ --pattern='*.py' --recursive -- celery -A worker worker

@@ -5,6 +5,7 @@ from name import app_name
 #  from datetime import timedelta
 
 SECRET_KEY = 'iQfPvB6sZaNHqVFI5CJa9rM1xOEVHKIM0LwifT04yLsPlZhSSvaDuZXOgJFSpJVq'
+REDIS_HOST = 'redis'
 
 
 class Config:
@@ -36,6 +37,13 @@ class Config:
     PASSWORD_RESET_EXPIRY = 2  # in hours
     COLLECT_STATIC_ROOT = os.path.dirname(__file__) + '/static'
     SOCKET = '/var/run/cbsdng/cbsdng.sock'
+    REDIS_HOST = REDIS_HOST
+    CELERY_LOG_LEVEL = 'INFO'
+    CELERY_BROKER_URL = 'redis://{}:6379'.format(REDIS_HOST)
+    CELERY_RESULT_BACKEND = 'redis://{}:6379'.format(REDIS_HOST)
+    CELERY_TASK_SERIALIZER = 'json'
+    CELERY_RESULT_SERIALIZER = 'json'
+    CELERY_ACCEPT_CONTENT = ['json']
     DATABASE = {
         'name': 'database.db',
         'engine': 'SqliteDatabase',
