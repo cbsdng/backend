@@ -2,3 +2,4 @@ freenit[sql]
 uwsgi
 gevent==1.5.0
 flask_socketio
+celery[redis]
