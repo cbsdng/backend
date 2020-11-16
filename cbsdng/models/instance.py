@@ -35,7 +35,7 @@ class Instance():
         instances = []
         while True:
             message = Message.receive(cls.sock)
-            if message.type == -1:
+            if message.type in [-1, Type.CONNECTION_CLOSED, Type.EXIT]:
                 break
             for m in message.payload.split('\n'):
                 tokens = [token for token in m.split() if token != '']
@@ -52,7 +52,7 @@ class Instance():
         command.send(cls.sock)
         while True:
             message = Message.receive(cls.sock)
-            if message.type == -1:
+            if message.type in [-1, Type.CONNECTION_CLOSED, Type.EXIT]:
                 break
             for m in message.payload.split('\n'):
                 tokens = [token for token in m.split() if token != '']
