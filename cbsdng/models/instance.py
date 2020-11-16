@@ -96,3 +96,11 @@ class Instance():
                 'state': self.state,
                 'hypervisor': self.hypervisor,
             }
+
+    def start(self):
+        command = Message(0, Type.NOCOLOR, f'start {self.name}')
+        command.send(self.sock)
+
+    def stop(self):
+        command = Message(0, Type.NOCOLOR, f'stop {self.name}')
+        command.send(self.sock)
