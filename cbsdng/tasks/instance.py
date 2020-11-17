@@ -10,7 +10,7 @@ from ..models.instance import Instance
 @celery.task(bind=True)
 def start(self, instance_name):
     instance = Instance(
-        socketpath=current_app.config['SOCKET'],
+        sockpath=current_app.conf['SOCKET'],
         name=instance_name,
     )
     instance.start()
@@ -22,7 +22,7 @@ def start(self, instance_name):
 @celery.task(bind=True)
 def stop(self, instance_name):
     instance = Instance(
-        socketpath=current_app.config['SOCKET'],
+        sockpath=current_app.conf['SOCKET'],
         name=instance_name,
     )
     instance.stop()
