@@ -1,4 +1,7 @@
 import socket
+from json import dumps
+
+from redis import StrictRedis
 
 from ..types import Type
 from .message import Message
@@ -22,9 +25,6 @@ class Instance():
         self.ostype = kwargs.get('ostype', '')
         self.vnc = kwargs.get('vnc', '')
         self.hypervisor = kwargs.get('hypervisor', 'jail')
-        if self.sockpath is not None:
-            self.sock = socket.socket(socket.AF_UNIX, socket.SOCK_STREAM)
-            self.sock.connect(self.sockpath)
 
     @classmethod
     def fetchAll(cls, sockpath):
@@ -62,7 +62,6 @@ class Instance():
                     i.pcpu, i.ostype, i.ip, i.state, i.vnc = tokens[5:]
                     i.hypervisor = 'bhyve'
                     instances.append(i)
-
         cls.sock.close()
         return instances
 
@@ -71,6 +70,30 @@ class Instance():
 
     def __repr__(self):
         return self.__str__()
+
+    def open(self):
+        if self.sockpath is not None:
+            self.sock = socket.socket(socket.AF_UNIX, socket.SOCK_STREAM)
+            self.sock.connect(self.sockpath)
+
+    def close(self):
+        self.sock.close()
+
+    def execute(self, command):
+        self.open()
+        command.send(self.sock)
+        while True:
+            output = Message.receive(self.sock)
+            # TODO: cleanup
+            print(output)
+            message = dumps(output.dict())
+            redis = StrictRedis(host='redis')
+            redis.publish('cbsdng', message)
+            if output.type in [-1, Type.CONNECTION_CLOSED, Type.EXIT]:
+                # TODO: cleanup
+                print('Exiting')
+                break
+        self.close()
 
     def data(self):
         if self.hypervisor == 'bhyve':
@@ -99,8 +122,8 @@ class Instance():
 
     def start(self):
         command = Message(0, Type.NOCOLOR, f'start {self.name}')
-        command.send(self.sock)
+        self.execute(command)
 
     def stop(self):
         command = Message(0, Type.NOCOLOR, f'stop {self.name}')
-        command.send(self.sock)
+        self.execute(command)
