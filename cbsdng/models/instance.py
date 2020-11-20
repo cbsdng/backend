@@ -84,14 +84,10 @@ class Instance():
         command.send(self.sock)
         while True:
             output = Message.receive(self.sock)
-            # TODO: cleanup
-            print(output)
             message = dumps(output.dict())
             redis = StrictRedis(host='redis')
             redis.publish('cbsdng', message)
             if output.type in [-1, Type.CONNECTION_CLOSED, Type.EXIT]:
-                # TODO: cleanup
-                print('Exiting')
                 break
         self.close()
 
@@ -121,9 +117,9 @@ class Instance():
             }
 
     def start(self):
-        command = Message(0, Type.NOCOLOR, f'start {self.name}')
+        command = Message(0, 0, f'start {self.name}')
         self.execute(command)
 
     def stop(self):
-        command = Message(0, Type.NOCOLOR, f'stop {self.name}')
+        command = Message(0, 0, f'stop {self.name}')
         self.execute(command)
