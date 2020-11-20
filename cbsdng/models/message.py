@@ -8,16 +8,10 @@ class Message():
         self.payload = payload
 
     def __str__(self):
-        return f'{self._id} {self._type} {self._payload}'
+        return f'{self.id} {self.type} {self.payload}'
 
     def __unicode__(self):
         return self.__str__()
-
-    def send(self, socket):
-        socket.sendall(self.id.to_bytes(4, sys.byteorder))
-        socket.sendall(self.type.to_bytes(4, sys.byteorder))
-        socket.sendall(len(self.payload).to_bytes(4, sys.byteorder))
-        socket.sendall(bytes(self.payload, 'utf-8'))
 
     @classmethod
     def receive(cls, socket):
@@ -43,3 +37,16 @@ class Message():
             return message
         message.payload = buffer.decode('utf-8')
         return message
+
+    def dict(self):
+        return {
+            'id': self.id,
+            'type': self.type,
+            'payload': self.payload,
+        }
+
+    def send(self, socket):
+        socket.sendall(self.id.to_bytes(4, sys.byteorder))
+        socket.sendall(self.type.to_bytes(4, sys.byteorder))
+        socket.sendall(len(self.payload).to_bytes(4, sys.byteorder))
+        socket.sendall(bytes(self.payload, 'utf-8'))

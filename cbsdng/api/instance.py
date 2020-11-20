@@ -1,10 +1,11 @@
 from flask import current_app
-from flask_smorest import Blueprint, abort
+from flask_smorest import Blueprint
 from freenit.api.methodviews import ProtectedMethodView
 from freenit.schemas.paging import PageInSchema
 
 from ..models.instance import Instance
 from ..schemas.instance import InstancePageOutSchema, InstanceSchema
+from ..tasks.instance import start, stop
 
 blueprint = Blueprint('instances', 'instances')
 
@@ -32,36 +33,19 @@ class InstanceListAPI(ProtectedMethodView):
         return instance
 
 
-@blueprint.route('/<int:instance_id>', endpoint='detail')
-class InstanceAPI(ProtectedMethodView):
+@blueprint.route('/<instance_name>/start', endpoint='start')
+class InstanceStartAPI(ProtectedMethodView):
     @blueprint.response(InstanceSchema)
-    def get(self, instance_id):
-        """Get instance details"""
-        try:
-            instance = Instance.get(id=instance_id)
-        except Instance.DoesNotExist:
-            abort(404, message='No such instance')
-        return instance
+    def get(self, instance_name):
+        """Start instance"""
+        start.delay(instance_name)
+        return {}
 
-    @blueprint.arguments(InstanceSchema(partial=True))
-    @blueprint.response(InstanceSchema)
-    def patch(self, args, instance_id):
-        """Edit instance details"""
-        try:
-            instance = Instance.get(id=instance_id)
-        except Instance.DoesNotExist:
-            abort(404, message='No such instance')
-        for field in args:
-            setattr(instance, field, args[field])
-        instance.save()
-        return instance
 
+@blueprint.route('/<instance_name>/stop', endpoint='stop')
+class InstanceStopAPI(ProtectedMethodView):
     @blueprint.response(InstanceSchema)
-    def delete(self, instance_id):
-        """Delete instance"""
-        try:
-            instance = Instance.get(id=instance_id)
-        except Instance.DoesNotExist:
-            abort(404, message='No such instance')
-        instance.delete_instance()
-        return instance
+    def get(self, instance_name):
+        """Stop instance"""
+        stop.delay(instance_name)
+        return {}
